@@ -623,7 +623,7 @@ html {
 }
 
 .g-title {
-  text-align: center;
+  text-align: left;
   font-size: 22px;
   font-weight: 600;
   font-family: "Inter", sans-serif;
@@ -633,7 +633,7 @@ html {
 }
 
 .g-content {
-  text-align: center;
+  text-align: left;
   font-weight: normal;
   font-size: 16px;
   margin-inline: 30px;
