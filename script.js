@@ -1,13 +1,3 @@
-document.addEventListener("DOMContentLoaded", (event) => {
-  gsap.registerPlugin(ScrollTrigger, SplitText);
-
-  animate_navbar();
-  animate_title_button_subtitle();
-  animate_genres_cards();
-  animate_payment_cards();
-});
-
-const gridContainer = document.getElementById("img-con2");
 const imgArr = [
   "./images2/avatar.jpg",
   "./images2/coco.jpeg",
@@ -20,9 +10,62 @@ const imgArr = [
   "./images2/kungfupanda.jpg",
 ];
 
+document.addEventListener("DOMContentLoaded", async (event) => {
+  gsap.registerPlugin(ScrollTrigger, SplitText);
+
+  animate_navbar();
+  try {
+    const response = await preloadImages(imgArr);
+    animate_title_button_subtitle();
+  } catch (error) {
+    console.log("error: some images were not loaded:" + error);
+  }
+
+  animate_genres_cards();
+  animate_payment_cards();
+});
+
+const gridContainer = document.getElementById("img-con2");
+
+function imageLoadCheck(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = src;
+
+    if (img.complete) {
+      // Already cached
+      resolve(img);
+    } else {
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+    }
+  });
+}
+
+async function preloadImages(imageList) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const loadedImages = await Promise.all(imageList.map(imageLoadCheck));
+      // All images are loaded (or cached)
+      resolve(loadedImages);
+    } catch (err) {
+      console.error("Some images failed to load:", err);
+      reject(err);
+    }
+  });
+}
+
 const getRandomImage = () => {
   let index = Math.floor(Math.random() * imgArr.length);
   return imgArr[index];
+};
+
+const loadRandomImagesInGrid = () => {
+  const gridBlocks = document.querySelectorAll(".img-con-2 > .item");
+  gridBlocks.forEach((block) => {
+    let url = 'url("' + getRandomImage() + '")';
+    block.style.backgroundImage = url;
+  });
 };
 
 function LargeScreenGrigConfiguration() {
@@ -37,11 +80,7 @@ function LargeScreenGrigConfiguration() {
   }
   gridContainer.innerHTML = arr.join(" ");
 
-  const gridBlocks = document.querySelectorAll(".img-con-2 > .item");
-  gridBlocks.forEach((block) => {
-    let url = 'url("' + getRandomImage() + '")';
-    block.style.backgroundImage = url;
-  });
+  loadRandomImagesInGrid();
 
   const block1 = document.getElementById("it3");
   const block2 = document.getElementById("it12");
